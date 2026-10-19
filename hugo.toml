@@ -1,0 +1,79 @@
+baseURL = "https://firc.hoaxisr.ru/"
+languageCode = "ru"
+title = "firc"
+theme = "hextra"
+
+defaultContentLanguage = "ru"
+
+enableRobotsTXT = true
+enableGitInfo = true
+enableEmoji = false
+
+disableKinds = ["taxonomy", "term"]
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.highlight]
+    noClasses = false
+
+[languages.ru]
+  languageName = "Русский"
+  weight = 1
+
+  [[languages.ru.menu.main]]
+    name = "Как это работает"
+    pageRef = "/how-it-works"
+    weight = 1
+
+  [[languages.ru.menu.main]]
+    name = "Установка"
+    pageRef = "/install"
+    weight = 2
+
+  [[languages.ru.menu.main]]
+    name = "Быстрый старт"
+    pageRef = "/quickstart"
+    weight = 3
+
+  [[languages.ru.menu.main]]
+    name = "Руководство"
+    pageRef = "/guide"
+    weight = 4
+
+  [[languages.ru.menu.main]]
+    name = "Вопросы и решения"
+    pageRef = "/faq"
+    weight = 5
+
+  [[languages.ru.menu.main]]
+    name = "Поиск"
+    weight = 50
+    [languages.ru.menu.main.params]
+      type = "search"
+
+  [[languages.ru.menu.main]]
+    name = "GitHub"
+    url = "https://github.com/hoaxisr/firc"
+    weight = 99
+    [languages.ru.menu.main.params]
+      icon = "github"
+
+[params]
+  description = "Маршрутизация по доменам, а не по адресам, для роутеров Keenetic"
+  navbar.displayTitle = true
+  navbar.displayLogo = true
+  navbar.logo.path = "img/logo.png"
+  navbar.logo.width = 28
+  navbar.logo.height = 28
+  footer.displayCopyright = false
+  footer.displayPoweredBy = false
+  editURL.enable = false
+  [params.page]
+    width = "wide"
+  [params.search]
+    enable = true
+    type = "flexsearch"
+    [params.search.flexsearch]
+      index = "content"
+      tokenize = "forward"

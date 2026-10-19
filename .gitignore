@@ -1,0 +1,8 @@
+public/
+resources/
+.hugo_build.lock
+.idea/
+.vscode/
+*.swp
+.DS_Store
+scripts/deploy.sh

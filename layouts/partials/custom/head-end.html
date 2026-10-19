@@ -1,0 +1,80 @@
+{{/* Лайтбокс для скриншотов: клик по картинке в контенте открывает её на весь
+     экран; клик по увеличенной — полный размер с прокруткой; Escape или клик
+     по фону закрывает. Без внешних зависимостей. */}}
+<style>
+  .content img { cursor: zoom-in; }
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2vh 2vw;
+    background: rgba(10, 12, 16, 0.88);
+    cursor: zoom-out;
+    overflow: auto;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  .lightbox img {
+    max-width: 96vw;
+    max-height: 94vh;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+    background: #fff;
+    cursor: zoom-in;
+  }
+  .lightbox.full { display: block; text-align: center; }
+  .lightbox.full img { max-width: none; max-height: none; cursor: zoom-out; }
+  .lightbox-hint {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+    pointer-events: none;
+    user-select: none;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var open = null;
+    function close() {
+      if (!open) return;
+      open.remove();
+      open = null;
+      document.documentElement.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') close();
+    });
+    document.querySelectorAll('.content img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        var box = document.createElement('div');
+        box.className = 'lightbox';
+        var big = document.createElement('img');
+        big.src = img.currentSrc || img.src;
+        big.alt = img.alt || '';
+        var hint = document.createElement('div');
+        hint.className = 'lightbox-hint';
+        hint.textContent = 'Клик по картинке — полный размер · Esc или клик по фону — закрыть';
+        box.appendChild(big);
+        box.appendChild(hint);
+        box.addEventListener('click', function (e) {
+          if (e.target === big) {
+            box.classList.toggle('full');
+          } else {
+            close();
+          }
+        });
+        document.body.appendChild(box);
+        document.documentElement.style.overflow = 'hidden';
+        open = box;
+      });
+    });
+  });
+</script>
