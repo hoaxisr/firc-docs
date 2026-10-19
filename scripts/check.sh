@@ -14,7 +14,8 @@ leak='magitrickle|hydraroute|xkeen|\bmt-c\b|dan0102dan|firc-archive|awgm-server|
 hits=$(grep -rIniE "$leak" --exclude-dir={themes,public,resources,.git} --exclude=check.sh --exclude=deploy.sh . || true)
 [[ -z "$hits" ]] || fail "forbidden text:"$'\n'"$hits"
 
-broken=$(cd public && grep -rhoE 'href="/[^"#?]*' --include='*.html' . | sed 's/^href="//' | sort -u | while read -r p; do
+broken=$(cd public && { grep -rhoE "href=[\"']?(https://firc\.hoaxisr\.ru)?/[^\"' >#?]*" --include='*.html' . || true; } |
+    sed -E "s#^href=[\"']?(https://firc\.hoaxisr\.ru)?##" | sort -u | while read -r p; do
     [[ -e ".$p" || -e ".${p%/}/index.html" || -e ".$p.html" ]] || echo "$p"
 done)
 [[ -z "$broken" ]] || fail "broken internal links:"$'\n'"$broken"
