@@ -69,11 +69,7 @@ disableKinds = ["taxonomy", "term"]
   footer.displayCopyright = false
   footer.displayPoweredBy = false
   editURL.enable = false
+  search.enable = true
+  search.type = "flexsearch"
   [params.page]
     width = "wide"
-  [params.search]
-    enable = true
-    type = "flexsearch"
-    [params.search.flexsearch]
-      index = "content"
-      tokenize = "forward"
