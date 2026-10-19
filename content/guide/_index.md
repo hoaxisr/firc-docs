@@ -1,3 +1,4 @@
 ---
-title: guide
+title: Руководство
+weight: 4
 ---
