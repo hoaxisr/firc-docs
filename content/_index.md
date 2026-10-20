@@ -56,21 +56,28 @@ firc для роутеров Keenetic уводит в туннель ровно 
 
 ## Начать
 
-{{< hextra/feature-grid >}}
-  {{< hextra/feature-card title="Установка" subtitle="Entware, репозиторий, первый вход в веб-интерфейс." link="install/" >}}
-  {{< hextra/feature-card title="Быстрый старт" subtitle="Первая группа: chatgpt.com через туннель, остальное напрямую." link="quickstart/" >}}
-  {{< hextra/feature-card title="Вопросы и решения" subtitle="Сайт идёт мимо туннеля, значки групп, веб-интерфейс не открывается." link="faq/" >}}
-{{< /hextra/feature-grid >}}
+{{< cards cols="3" >}}
+  {{< card link="install/" title="Установка" icon="download" subtitle="Entware, репозиторий, первый вход в веб-интерфейс." >}}
+  {{< card link="quickstart/" title="Быстрый старт" icon="play" subtitle="Первая группа: chatgpt.com через туннель, остальное напрямую." >}}
+  {{< card link="faq/" title="Вопросы и решения" icon="question-mark-circle" subtitle="Сайт идёт мимо туннеля, значки групп, веб-интерфейс не открывается." >}}
+{{< /cards >}}
+
+<div class="hx-mt-16"></div>
 
 ## Руководство
 
-{{< hextra/feature-grid >}}
-  {{< hextra/feature-card title="Группы и правила" subtitle="Что такое группа, типы правил, порядок и приоритет." link="guide/groups/" >}}
-  {{< hextra/feature-card title="Списки" subtitle="Правила по ссылке: текстовые списки и rule-set sing-box." link="guide/lists/" >}}
-  {{< hextra/feature-card title="Устройства" subtitle="Группа для всех, для политики Keenetic или для отдельных устройств." link="guide/devices/" >}}
-  {{< hextra/feature-card title="Интерфейсы и резервирование" subtitle="Запасной интерфейс, если основной упал." link="guide/interfaces/" >}}
-  {{< hextra/feature-card title="Туннели VLESS" subtitle="Ссылки, подписки, узлы и их проверка." link="guide/tunnels/" >}}
-  {{< hextra/feature-card title="Журнал и захват" subtitle="DNS-ответы по группам и поиск трафика мимо firc." link="guide/journal/" >}}
-  {{< hextra/feature-card title="Настройки" subtitle="Что применяется сразу, а что после перезапуска." link="guide/settings/" >}}
-  {{< hextra/feature-card title="Обновление" subtitle="Обновление из веб-интерфейса и через opkg." link="guide/update/" >}}
-{{< /hextra/feature-grid >}}
+{{< cards cols="3" >}}
+  {{< card link="guide/groups/" title="Группы и правила" icon="collection" subtitle="Что такое группа, типы правил, порядок и приоритет." >}}
+  {{< card link="guide/lists/" title="Списки" icon="document-text" subtitle="Правила по ссылке: текстовые списки и rule-set sing-box." >}}
+  {{< card link="guide/devices/" title="Устройства" icon="device-mobile" subtitle="Группа для всех, для политики Keenetic или для отдельных устройств." >}}
+  {{< card link="guide/interfaces/" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Запасной интерфейс, если основной упал." >}}
+  {{< card link="guide/tunnels/" title="Туннели VLESS" icon="lock-closed" subtitle="Ссылки, подписки, узлы и их проверка." >}}
+  {{< card link="guide/journal/" title="Журнал и захват" icon="clipboard-list" subtitle="DNS-ответы по группам и поиск трафика мимо firc." >}}
+  {{< card link="guide/settings/" title="Настройки" icon="cog" subtitle="Что применяется сразу, а что после перезапуска." >}}
+  {{< card link="guide/update/" title="Обновление" icon="refresh" subtitle="Обновление из веб-интерфейса и через opkg." >}}
+  {{< card link="benchmarks/" title="Замеры" icon="chart-bar" subtitle="Размер, память, DNS и скорость VLESS-клиентов." >}}
+{{< /cards >}}
+
+<div class="hx-mt-16"></div>
+
+[Исходный код](https://github.com/hoaxisr/firc) · [Репозиторий opkg](http://repo.hoaxisr.ru) · [Релизы](https://github.com/hoaxisr/firc/releases) · [Баги и предложения](https://github.com/hoaxisr/firc/issues) · Роутеры Keenetic с Entware
