@@ -5,6 +5,14 @@ weight: 1
 
 Маршрутизация по адресам из ответа DNS не может разделить два сайта, у которых общий адрес CDN: адрес у Cloudflare один на тысячи доменов, и в туннель уходит либо лишнее, либо ничего. firc решает по имени сайта. Для этого он сам отвечает устройствам на запросы DNS.
 
+## Пример: chatgpt.com и api.ipify.org
+
+Возьмём два сайта: **chatgpt.com** нужно пустить через туннель, а **api.ipify.org** (он показывает ваш внешний адрес) пусть идёт напрямую. Оба живут за Cloudflare.
+
+Обычная схема маршрутизирует по адресам: в ipset попадают IP из ответов DNS или готовые списки подсетей. В списках подсетей для ChatGPT лежит весь Cloudflare, поэтому в туннель уходит и api.ipify.org, хотя его нет ни в одном правиле. Так же страдает любой сайт за Cloudflare DNS proxy или другим CDN: у тысяч доменов одни и те же адреса.
+
+firc решает по имени. chatgpt.com уходит в туннель, а api.ipify.org показывает адрес вашего провайдера. Как это устроено — на схеме ниже.
+
 <div class="how-diagram" style="max-width:560px;margin:2rem auto;">
 <svg viewBox="0 0 560 640" width="100%" role="img" aria-labelledby="how-title" style="color:inherit;font-family:inherit">
 <title id="how-title">Путь запроса к chatgpt.com и api.ipify.org через firc</title>
