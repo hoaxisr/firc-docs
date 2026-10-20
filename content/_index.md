@@ -81,3 +81,5 @@ firc для роутеров Keenetic уводит в туннель ровно 
 <div class="hx-mt-16"></div>
 
 [Исходный код](https://github.com/hoaxisr/firc) · [Репозиторий opkg](http://repo.hoaxisr.ru) · [Релизы](https://github.com/hoaxisr/firc/releases) · [Баги и предложения](https://github.com/hoaxisr/firc/issues) · Роутеры Keenetic с Entware
+
+<small>firc — продолжение форка MagiTrickle, переписанного dan0102dan на C. Маршрутизация устроена принципиально иначе; общим с исходным проектом сейчас остаётся в основном дизайн веб-интерфейса.</small>
