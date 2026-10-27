@@ -70,9 +70,9 @@ firc для роутеров Keenetic уводит в туннель ровно 
   {{< card link="guide/groups/" title="Группы и правила" icon="collection" subtitle="Что такое группа, типы правил, порядок и приоритет." >}}
   {{< card link="guide/lists/" title="Списки" icon="document-text" subtitle="Правила по ссылке: текстовые списки и rule-set sing-box." >}}
   {{< card link="guide/devices/" title="Устройства" icon="device-mobile" subtitle="Группа для всех, для политики Keenetic или для отдельных устройств." >}}
-  {{< card link="guide/interfaces/" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Запасной интерфейс, если основной упал." >}}
-  {{< card link="guide/tunnels/" title="Туннели VLESS" icon="lock-closed" subtitle="Ссылки, подписки, узлы и их проверка." >}}
-  {{< card link="guide/journal/" title="Журнал и захват" icon="clipboard-list" subtitle="DNS-ответы по группам и поиск трафика мимо firc." >}}
+  {{< card link="guide/interfaces/" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Запасной интерфейс, если основной упал, и блокировка." >}}
+  {{< card link="guide/tunnels/" title="Туннели VLESS" icon="lock-closed" subtitle="Ссылки, подписки, узлы, входящие порты." >}}
+  {{< card link="guide/journal/" title="Журнал, статистика и захват" icon="clipboard-list" subtitle="DNS-ответы по группам, запросы за сутки и поиск трафика мимо firc." >}}
   {{< card link="guide/settings/" title="Настройки" icon="cog" subtitle="Что применяется сразу, а что после перезапуска." >}}
   {{< card link="guide/update/" title="Обновление" icon="refresh" subtitle="Обновление из веб-интерфейса и через opkg." >}}
   {{< card link="benchmarks/" title="Замеры" icon="chart-bar" subtitle="Размер, память, DNS и скорость VLESS-клиентов." >}}

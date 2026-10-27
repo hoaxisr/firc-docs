@@ -13,11 +13,11 @@ cascade:
 
 {{< cards >}}
   {{< card link="groups" title="Группы и правила" icon="view-list" subtitle="Что такое группа, типы правил, порядок групп, импорт и экспорт." >}}
-  {{< card link="lists" title="Списки" icon="collection" subtitle="Правила по ссылке: текстовый список или rule-set sing-box, обновление по расписанию." >}}
+  {{< card link="lists" title="Списки" icon="collection" subtitle="Правила по ссылке: поиск в каталоге, текстовый список или rule-set sing-box, обновление по расписанию." >}}
   {{< card link="devices" title="Устройства" icon="device-mobile" subtitle="Для каких устройств работает группа: политики Keenetic, MAC, адреса вручную." >}}
-  {{< card link="interfaces" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Основной и резервные интерфейсы, проверка, что бывает, когда все упали." >}}
-  {{< card link="tunnels" title="Туннели VLESS" icon="link" subtitle="Встроенный клиент tunvless: ссылки, подписки, узлы, проверка, TCP через ядро." >}}
-  {{< card link="journal" title="Журнал и захват" icon="beaker" subtitle="События демона, ответы DNS и поиск трафика, который идёт мимо firc." >}}
+  {{< card link="interfaces" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Основной и резервные интерфейсы, проверка, блокировка, что бывает, когда все упали." >}}
+  {{< card link="tunnels" title="Туннели VLESS" icon="link" subtitle="Встроенный клиент tunvless: ссылки, подписки, узлы, входящие порты, TCP через ядро." >}}
+  {{< card link="journal" title="Журнал, статистика и захват" icon="beaker" subtitle="События демона, ответы DNS, запросы за сутки и поиск трафика, который идёт мимо firc." >}}
   {{< card link="settings" title="Настройки" icon="adjustments" subtitle="Что применяется сразу, а что после перезапуска; DNS-прокси, пул адресов, порт." >}}
   {{< card link="update" title="Обновление" icon="refresh" subtitle="Обновление из веб-интерфейса и через opkg." >}}
 {{< /cards >}}

@@ -1,6 +1,6 @@
 ---
 title: Замеры
-weight: 5
+weight: 6
 cascade:
   type: docs
 ---
