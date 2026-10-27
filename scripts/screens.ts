@@ -15,8 +15,15 @@ async function patch(route: Route, opts: Opts) {
   const body = JSON.parse(text);
   const url = route.request().url();
   const groups = (list: any[]) =>
-    list.map((g) => {
+    list.filter((g) => g.name !== "Example Group").map((g) => {
       const out = { ...g };
+      if (out.name === "ChatGPT" && out.resolver) {
+        const now = Math.floor(Date.now() / 1000);
+        out.resolver = {
+          ...out.resolver,
+          health: { window: 600, total: 37, fallbacks: 4, last: now - 90, reason: "fallback_timeout", resting: false, since: 0 },
+        };
+      }
       if (out.liveReason === "tunnel-down") {
         out.live = true;
         delete out.liveReason;
@@ -134,9 +141,26 @@ const group = (page: Page, name: string) =>
 
   await element(group(page, "Bad Bad Services"), "list-group.png", 12);
 
+  const ads = group(page, "Ads");
+  await ads.scrollIntoViewIfNeeded();
+  await ads.locator(".block-answer").first().click();
+  await settle(page);
+  const ab = (await ads.boundingBox())!;
+  const ed = (await page.locator(".block-answer-editor").boundingBox())!;
+  await shot(page, "block-answer.png", { x: 0, y: ab.y - 12, width: 1280, height: ed.y + ed.height - ab.y + 24 });
+  await page.keyboard.press("Escape");
+  await settle(page);
+
   await page.evaluate(() => window.scrollTo(0, 0));
   await settle(page);
   await page.getByRole("button", { name: "Свернуть все" }).click();
+  await settle(page);
+
+  await page.getByRole("button", { name: "Выбрать группу ChatGPT" }).click();
+  await page.getByRole("button", { name: "Выбрать группу YouTube" }).click();
+  await settle(page);
+  await element(page.locator(".bulk-bar"), "bulk-bar.png", 12);
+  await page.getByRole("button", { name: "Снять", exact: true }).click();
   await settle(page);
 
   await group(page, "ChatGPT").locator('button[aria-label="Select"]').first().click();
@@ -148,7 +172,7 @@ const group = (page: Page, name: string) =>
   await group(page, "ChatGPT").getByRole("button", { name: "Настройки группы" }).click();
   await settle(page);
   await element(page.locator("[role=dialog]").last(), "group-settings.png", 16);
-  await page.getByRole("button", { name: "DNS" }).click();
+  await page.getByRole("button", { name: "DNS", exact: true }).click();
   await settle(page);
   await shot(page, "group-dns.png", { x: 0, y: 140, width: 1280, height: 520 });
   await page.keyboard.press("Escape");
@@ -182,25 +206,45 @@ const group = (page: Page, name: string) =>
     await nd.getByRole("button", { name: "Предпросмотр" }).click();
     await settle(page, 1200);
     const text = await nd.innerText();
-    if (!text.includes("fetch failed") && !text.includes("нет ничего")) break;
+    if (!text.includes("fetch failed") && !text.includes("нет ничего") && !text.includes("answered 404")) break;
   }
   await nd.getByText("Строки, не являющиеся правилами", { exact: false }).scrollIntoViewIfNeeded().catch(() => {});
   await element(nd, "list-dialog.png", 16);
   await page.keyboard.press("Escape");
   await settle(page);
 
+  await page.getByRole("button", { name: "Добавить группу" }).click();
+  await settle(page);
+  const cd = page.locator("[role=dialog]").last();
+  await cd.getByRole("switch", { name: "Список по URL" }).click();
+  await settle(page);
+  await cd.locator("#gd-url").fill("youtube");
+  await page.getByText("sagernet", { exact: true }).first().waitFor({ timeout: 10000 });
+  await settle(page, 800);
+  const cdb = (await cd.boundingBox())!;
+  const sw = (await cd.getByRole("switch", { name: "Список по URL" }).boundingBox())!;
+  const lb = (await page.getByText("youtube@cn", { exact: true }).first().boundingBox())!;
+  await shot(page, "list-catalog.png", { x: cdb.x, y: sw.y - 20, width: cdb.width, height: lb.y + lb.height - sw.y + 36 });
+  await page.keyboard.press("Escape");
+  await settle(page);
+  await page.keyboard.press("Escape");
+  await settle(page);
+
   await tab(page, "Журнал");
   await shot(page, "journal.png");
 
-  await page.getByRole("button", { name: "Захват 5 мин" }).click({ timeout: 3000 }).catch(() => {});
-  await settle(page, 1000);
-  for (const src of ["Ядро firc", "Туннели", "DNS"]) {
-    await page.locator("main button:visible").filter({ hasText: new RegExp(`^${src}\\s*\\d+$`) }).first().click();
-    await settle(page, 200);
-  }
-  await page.waitForFunction(() => document.body.innerText.includes("по SNI"), null, { timeout: 30000 });
-  await settle(page, 800);
+  await page.getByRole("tab", { name: /Статистика запросов/ }).click();
+  await settle(page, 1500);
+  await shot(page, "journal-stats.png", { x: 0, y: 60, width: 1280, height: 520 });
+
+  await page.getByRole("tab", { name: /Захват/ }).click();
+  await settle(page);
+  await page.getByRole("button", { name: /^(Начать захват|Начать заново)$/ }).first().click({ timeout: 5000 }).catch(() => {});
+  await page.getByText("Пока утечек нет", { exact: false }).waitFor({ state: "detached", timeout: 30000 });
+  await settle(page, 7000);
   await shot(page, "capture.png", { x: 0, y: 60, width: 1280, height: 440 });
+  await page.getByRole("button", { name: "Остановить" }).click().catch(() => {});
+  await settle(page);
 
   await tab(page, "Настройки");
   await page.mouse.move(0, 0);
@@ -228,7 +272,6 @@ const group = (page: Page, name: string) =>
   await shot(page, "update-popover.png", { x: pb!.x - 16, y: pb!.y - 8, width: pb!.width + 32, height: pb!.height + 16 });
   await page.keyboard.press("Escape");
   await settle(page);
-  await shot(page, "update-block.png", { x: 0, y: 125, width: 1280, height: 150 });
 
   await page.getByRole("button", { name: "Сведения о приложении" }).click();
   await settle(page);
@@ -270,9 +313,16 @@ const group = (page: Page, name: string) =>
   await page.setViewportSize({ width: 1280, height: Math.ceil(cb2!.y + cb2!.height + 40) });
   await settle(page);
   const ft = await page.getByText("Отказоустойчивость", { exact: true }).boundingBox();
-  await page.screenshot({ path: OUT + "tunnel-settings.png", clip: { x: 0, y: ft!.y - 16, width: 1280, height: cb2!.y + cb2!.height - ft!.y + 28 } });
+  const ib = (await page.getByText("Входящие порты", { exact: true }).first().boundingBox())!;
+  await page.screenshot({ path: OUT + "tunnel-settings.png", clip: { x: 0, y: ft!.y - 16, width: 1280, height: ib.y - ft!.y + 4 } });
   console.log("wrote tunnel-settings.png");
   await page.setViewportSize({ width: 1280, height: 800 });
+  await settle(page);
+
+  const inb = page.locator("section.sec").filter({ hasText: "Входящие порты" }).first();
+  await inb.scrollIntoViewIfNeeded();
+  await element(inb, "tunnel-inbounds.png", 12);
+  await page.evaluate(() => window.scrollTo(0, 0));
   await settle(page);
 
   await page.getByRole("button", { name: "Подписка", exact: true }).click();

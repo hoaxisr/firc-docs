@@ -22,6 +22,8 @@ weight: 2
 
 Если в поле **Адрес или название** написать слово без `://`, firc ищет его в каталоге готовых rule-set: [sing-geosite](https://github.com/SagerNet/sing-geosite/tree/rule-set) (метка **sagernet**) и [hoaxisr/rulesets](https://github.com/hoaxisr/rulesets) (метка **hoaxisr**). Например, `youtube`, `telegram` или `category-ads-all`. Клик по строке подставляет ссылку на список, дальше — как обычно: **Предпросмотр** и сохранение.
 
+![Поиск списка youtube в каталоге](/img/ui/list-catalog.png)
+
 Каталог роутер скачивает с GitHub при первом поиске и держит в памяти 6 часов; на диск он не пишется. Если GitHub недоступен, под полем будет **Каталог недоступен**, а ссылку можно вставить вручную.
 
 ## Предпросмотр
