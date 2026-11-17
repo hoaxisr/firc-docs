@@ -20,7 +20,7 @@ toc: false
 
 <div class="hx-mb-12">
 {{< hextra/hero-subtitle >}}
-firc для роутеров Keenetic уводит в туннель ровно те сайты, которые вы назвали, и ничего лишнего. Пакет около 1,4 МБ вместе со своим клиентом VLESS, настройка из браузера.
+firc для роутеров Keenetic уводит в туннель ровно те сайты, которые вы назвали, и ничего лишнего. Пакет около 2 МБ вместе со своим клиентом VLESS и Hysteria2, настройка из браузера.
 {{< /hextra/hero-subtitle >}}
 </div>
 
@@ -41,13 +41,13 @@ firc для роутеров Keenetic уводит в туннель ровно 
     link="how-it-works"
   >}}
   {{< hextra/feature-card
-    title="Свой VLESS"
-    subtitle="Встроенный клиент tunvless на C: REALITY, gRPC, xhttp, подписки и проверка узлов. Скорость и память — в разделе «Замеры»."
+    title="Свой клиент"
+    subtitle="Встроенный клиент tunvless на C: VLESS (REALITY, gRPC, xhttp) и Hysteria2, подписки и проверка узлов. Скорость и память — в разделе «Замеры»."
     link="benchmarks/vless/"
   >}}
   {{< hextra/feature-card
     title="Лёгкий"
-    subtitle="Пакет 1,4 МБ вместе с VLESS-клиентом, демон на C без Go и интерпретаторов. Размер и память — в разделе «Замеры»."
+    subtitle="Пакет около 2 МБ вместе со своим клиентом, демон на C без Go и интерпретаторов. Размер и память — в разделе «Замеры»."
     link="benchmarks/firc/"
   >}}
 {{< /hextra/feature-grid >}}
@@ -71,7 +71,7 @@ firc для роутеров Keenetic уводит в туннель ровно 
   {{< card link="guide/lists/" title="Списки" icon="document-text" subtitle="Правила по ссылке: текстовые списки и rule-set sing-box." >}}
   {{< card link="guide/devices/" title="Устройства" icon="device-mobile" subtitle="Группа для всех, для политики Keenetic или для отдельных устройств." >}}
   {{< card link="guide/interfaces/" title="Интерфейсы и резервирование" icon="switch-horizontal" subtitle="Запасной интерфейс, если основной упал, и блокировка." >}}
-  {{< card link="guide/tunnels/" title="Туннели VLESS" icon="lock-closed" subtitle="Ссылки, подписки, узлы, входящие порты." >}}
+  {{< card link="guide/tunnels/" title="Туннели" icon="lock-closed" subtitle="VLESS и Hysteria2: ссылки, подписки, узлы, входящие порты." >}}
   {{< card link="guide/journal/" title="Журнал, статистика и захват" icon="clipboard-list" subtitle="DNS-ответы по группам, запросы за сутки и поиск трафика мимо firc." >}}
   {{< card link="guide/settings/" title="Настройки" icon="cog" subtitle="Что применяется сразу, а что после перезапуска." >}}
   {{< card link="guide/update/" title="Обновление" icon="refresh" subtitle="Обновление из веб-интерфейса и через opkg." >}}
