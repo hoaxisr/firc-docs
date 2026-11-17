@@ -1,10 +1,34 @@
 import { chromium, type Locator, type Page, type Route } from "npm:playwright@1.60.0";
 
 const BASE = Deno.env.get("FIRC_UI") ?? "http://localhost:5173/";
+const MOCK = Deno.env.get("FIRC_MOCK") ?? "http://localhost:6969/";
 const OUT = new URL("../static/img/ui/", import.meta.url).pathname;
 await Deno.mkdir(OUT, { recursive: true });
 
-type Opts = { backup?: boolean };
+type Opts = { backup?: boolean; hy2?: boolean; autolist?: boolean };
+
+const HY2_KEY = "0000000f:A";
+const HY2_NAME = "Hysteria2-Example";
+const HY2_LINK =
+  "hysteria2://PASSWORD@hy2.example.com:443,20000-30000?sni=hy2.example.com&obfs=salamander&obfs-password=SECRET&hop=10-30#" +
+  HY2_NAME;
+
+const AUTOLIST_NAMES: [string, string][] = [
+  ["93.243.107.34.bc.googleusercontent.com", "host-93.example.net"],
+  ["chat.openai.com", "chat.example.com"],
+  ["rutracker.org", "video.example.com"],
+  ["linkedin.com", "social.example.net"],
+  ["some-vps.de", "files.example.org"],
+  ["medium.com", "blog.example.com"],
+  ["instagram.com", "photos.example.net"],
+  ["172.64.150.28", "203.0.113.28"],
+  ["34.107.243.93", "198.51.100.93"],
+  ["2606:4700::6810:84e5", "2001:db8::84e5"],
+  ["149.154.167.51", "203.0.113.51"],
+  ["91.108.56.130", "198.51.100.130"],
+  ["g1g1g1g1", "c4a7e1f0"],
+  ['"state":"checking"', '"state":"candidate"'],
+];
 
 async function patch(route: Route, opts: Opts) {
   const res = await route.fetch();
@@ -12,8 +36,11 @@ async function patch(route: Route, opts: Opts) {
   if (!type.includes("json")) return route.fulfill({ response: res });
   let text = await res.text();
   text = text.replaceAll("Reborn VPN", "Reserve");
-  const body = JSON.parse(text);
   const url = route.request().url();
+  if (opts.autolist && url.includes("/api/v1/system/autolist")) {
+    for (const [from, to] of AUTOLIST_NAMES) text = text.replaceAll(from, to);
+  }
+  const body = JSON.parse(text);
   const groups = (list: any[]) =>
     list.filter((g) => g.name !== "Example Group").map((g) => {
       const out = { ...g };
@@ -41,6 +68,16 @@ async function patch(route: Route, opts: Opts) {
       return out;
     });
   if (url.includes("/api/v1/groups") && Array.isArray(body.groups)) body.groups = groups(body.groups);
+  if (opts.hy2 && url.endsWith("/api/v1/tunnels") && Array.isArray(body.tunnels)) {
+    const main = body.tunnels.find((tn: any) => tn.id === "main");
+    if (main) main.sources.splice(1, 0, { id: "0000000f", kind: "link", link: HY2_LINK });
+  }
+  if (opts.hy2 && url.endsWith("/api/v1/tunnels/preview") && Array.isArray(body.nodes)) {
+    for (const row of body.nodes) if (row.key === HY2_KEY) row.name = HY2_NAME;
+  }
+  if (opts.hy2 && url.endsWith("/api/v1/tunnels/probe") && Array.isArray(body.nodes)) {
+    body.nodes.splice(1, 0, { key: HY2_KEY, ok: true, why: "", handshakeMs: 52, firstByteMs: 87 });
+  }
   if (url.endsWith("/api/v1/tunnels/state")) {
     body.tunnels = body.tunnels.map((tn: any) => ({
       ...tn,
@@ -55,6 +92,10 @@ async function patch(route: Route, opts: Opts) {
       rxBps: 1_250_000,
       txBps: 180_000,
     }));
+    if (opts.hy2) {
+      const main = body.tunnels.find((tn: any) => tn.id === "main");
+      main?.nodes.splice(1, 0, { key: HY2_KEY, name: HY2_NAME, source: "link", state: "reserve", since: 0 });
+    }
   }
   return route.fulfill({ response: res, json: body });
 }
@@ -180,7 +221,7 @@ const group = (page: Page, name: string) =>
   await page.keyboard.press("Escape");
   await settle(page);
 
-  await group(page, "YouTube").getByRole("button", { name: "2 устройства" }).click();
+  await group(page, "YouTube").getByRole("button", { name: /^\d+ устройств/ }).click();
   await settle(page, 1000);
   await element(page.locator("[role=dialog]").last(), "devices.png", 0);
   await page.getByText("Вручную", { exact: false }).last().click();
@@ -292,8 +333,11 @@ const group = (page: Page, name: string) =>
   const page = await session();
   await tab(page, "Туннели");
   await settle(page, 1500);
-  await shot(page, "tunnels.png", { x: 0, y: 128, width: 1280, height: 126 });
-  await page.getByRole("button", { name: "Развернуть", exact: true }).click();
+  const cards = page.locator(".card[data-tunnel]");
+  const top = (await cards.first().boundingBox())!;
+  const bottom = (await cards.last().boundingBox())!;
+  await shot(page, "tunnels.png", { x: 0, y: top.y - 12, width: 1280, height: bottom.y + bottom.height - top.y + 24 });
+  await cards.first().getByRole("button", { name: "Развернуть", exact: true }).click();
   await settle(page);
   await page.getByRole("button", { name: "Проверить все узлы сейчас" }).click();
   await settle(page, 2500);
@@ -335,6 +379,85 @@ const group = (page: Page, name: string) =>
   await element(sd, "tunnel-subscription.png", 16);
   await page.keyboard.press("Escape");
   await settle(page);
+  await page.context().close();
+}
+
+{
+  const page = await session();
+  await tab(page, "Туннели");
+  await settle(page, 1500);
+  const card = page.locator('.card[data-tunnel="router"]');
+  await card.getByRole("button", { name: "Развернуть", exact: true }).click();
+  await settle(page);
+  await card.getByRole("button", { name: "Скрыть узлы" }).click();
+  await settle(page);
+  await page.setViewportSize({ width: 1280, height: 1400 });
+  await settle(page);
+  const cb = (await card.boundingBox())!;
+  const pol = (await card.locator("[data-router-policies]").boundingBox())!;
+  await shot(page, "tunnel-opkgtun.png", { x: 0, y: cb.y - 12, width: 1280, height: pol.y + pol.height - cb.y + 24 });
+  await page.context().close();
+}
+
+{
+  const page = await session({ hy2: true });
+  await tab(page, "Туннели");
+  await settle(page, 1500);
+  const card = page.locator('.card[data-tunnel="main"]');
+  await card.getByRole("button", { name: "Развернуть", exact: true }).click();
+  await settle(page);
+  await card.getByRole("button", { name: "Проверить все узлы сейчас" }).click();
+  await settle(page, 2500);
+  await card.getByRole("button", { name: "Показать адрес" }).nth(1).click();
+  await page.setViewportSize({ width: 1280, height: 1600 });
+  await settle(page);
+  const src = (await card.getByText("Источники", { exact: true }).boundingBox())!;
+  const ft = (await card.getByText("Отказоустойчивость", { exact: true }).boundingBox())!;
+  await shot(page, "tunnel-hy2.png", { x: 0, y: src.y - 16, width: 1280, height: ft.y - src.y + 4 });
+  await page.context().close();
+}
+
+{
+  const page = await session({ autolist: true });
+  const auth = await page.request.post(new URL("api/v1/auth", MOCK).toString(), {
+    data: { login: "root", password: "keenetic" },
+  });
+  const { token } = await auth.json();
+  const res = await page.request.put(new URL("api/v1/system/settings", MOCK).toString(), {
+    headers: { "X-Firc-Token": token },
+    data: { settings: { "app.autolist.enabled": true, "app.autolist.group": "c4a7e1f0" } },
+  });
+  if (!res.ok()) throw new Error(`autolist on: ${res.status()}`);
+  await page.reload({ waitUntil: "networkidle" });
+  await settle(page, 1500);
+
+  await tab(page, "Журнал");
+  await page.getByRole("tab", { name: /Не открываются/ }).click();
+  await settle(page, 1500);
+  await page.setViewportSize({ width: 1280, height: 1600 });
+  await settle(page);
+  const tabs = (await page.getByRole("tab", { name: /Не открываются/ }).boundingBox())!;
+  const end = await page.evaluate(() => {
+    const h = [...document.querySelectorAll("*")].find(
+      (e) => e.children.length === 0 && e.textContent?.trim() === "Адреса мимо firc",
+    );
+    let el: Element | null | undefined = h;
+    while (el && !el.nextElementSibling) el = el.parentElement;
+    const r = el?.nextElementSibling?.getBoundingClientRect();
+    return r ? r.bottom : 0;
+  });
+  await shot(page, "journal-unopened.png", { x: 0, y: tabs.y - 12, width: 1280, height: end - tabs.y + 24 });
+  await page.setViewportSize({ width: 1280, height: 800 });
+
+  await tab(page, "Настройки");
+  await settle(page, 1000);
+  await page.setViewportSize({ width: 1280, height: 1400 });
+  const sec = page.locator('[data-section="autolist"]');
+  await sec.evaluate((e) => window.scrollBy(0, e.getBoundingClientRect().top - 140));
+  await page.mouse.move(0, 0);
+  await settle(page);
+  const sb = (await sec.boundingBox())!;
+  await shot(page, "settings-autolist.png", { x: 0, y: sb.y - 12, width: 1280, height: sb.height + 24 });
   await page.context().close();
 }
 
