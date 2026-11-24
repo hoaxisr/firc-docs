@@ -180,8 +180,6 @@ const group = (page: Page, name: string) =>
   await page.keyboard.press("Escape");
   await settle(page);
 
-  await element(group(page, "Bad Bad Services"), "list-group.png", 12);
-
   const ads = group(page, "Ads");
   await ads.scrollIntoViewIfNeeded();
   await ads.locator(".block-answer").first().click();
@@ -212,13 +210,23 @@ const group = (page: Page, name: string) =>
 
   await group(page, "ChatGPT").getByRole("button", { name: "Настройки группы" }).click();
   await settle(page);
-  await element(page.locator("[role=dialog]").last(), "group-settings.png", 16);
   await page.getByRole("button", { name: "DNS", exact: true }).click();
   await settle(page);
   await shot(page, "group-dns.png", { x: 0, y: 140, width: 1280, height: 520 });
   await page.keyboard.press("Escape");
   await settle(page);
+  await page.setViewportSize({ width: 1280, height: 1100 });
+  await settle(page);
+  const sd = page.locator("[role=dialog]").last();
+  for (const u of ["https://lists.example.invalid/ads.srs", "https://lists.example.invalid/trackers.txt"]) {
+    await sd.locator("#gd-url").fill(u);
+    await sd.getByRole("button", { name: "Добавить список" }).click();
+    await settle(page);
+  }
+  await element(sd, "group-settings.png", 16);
   await page.keyboard.press("Escape");
+  await settle(page);
+  await page.setViewportSize({ width: 1280, height: 800 });
   await settle(page);
 
   await group(page, "YouTube").getByRole("button", { name: /^\d+ устройств/ }).click();
@@ -236,34 +244,37 @@ const group = (page: Page, name: string) =>
   await page.getByRole("button", { name: "Отмена" }).last().click();
   await settle(page);
 
+  await page.setViewportSize({ width: 1280, height: 1500 });
   await page.getByRole("button", { name: "Добавить группу" }).click();
   await settle(page);
   const nd = page.locator("[role=dialog]").last();
   await nd.locator("#gd-name").fill("Реклама");
-  await nd.getByRole("switch", { name: "Список по URL" }).click();
-  await settle(page);
-  await nd.locator("#gd-url").fill("https://lists.example.invalid/ads.srs");
+  for (const u of ["https://lists.example.invalid/ads.srs", "https://lists.example.invalid/trackers.txt"]) {
+    await nd.locator("#gd-url").fill(u);
+    await nd.getByRole("button", { name: "Добавить список" }).click();
+    await settle(page);
+  }
   for (let i = 0; i < 12; i++) {
-    await nd.getByRole("button", { name: "Предпросмотр" }).click();
+    await nd.getByRole("button", { name: "Предпросмотр" }).first().click();
     await settle(page, 1200);
     const text = await nd.innerText();
-    if (!text.includes("fetch failed") && !text.includes("нет ничего") && !text.includes("answered 404")) break;
+    if (!text.includes("answered 404") && !text.includes("нет ничего")) break;
   }
   await nd.getByText("Строки, не являющиеся правилами", { exact: false }).scrollIntoViewIfNeeded().catch(() => {});
   await element(nd, "list-dialog.png", 16);
   await page.keyboard.press("Escape");
   await settle(page);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await settle(page);
 
   await page.getByRole("button", { name: "Добавить группу" }).click();
   await settle(page);
   const cd = page.locator("[role=dialog]").last();
-  await cd.getByRole("switch", { name: "Список по URL" }).click();
-  await settle(page);
   await cd.locator("#gd-url").fill("youtube");
   await page.getByText("sagernet", { exact: true }).first().waitFor({ timeout: 10000 });
   await settle(page, 800);
   const cdb = (await cd.boundingBox())!;
-  const sw = (await cd.getByRole("switch", { name: "Список по URL" }).boundingBox())!;
+  const sw = (await cd.getByText("Списки по URL", { exact: true }).first().boundingBox())!;
   const lb = (await page.getByText("youtube@cn", { exact: true }).first().boundingBox())!;
   await shot(page, "list-catalog.png", { x: cdb.x, y: sw.y - 20, width: cdb.width, height: lb.y + lb.height - sw.y + 36 });
   await page.keyboard.press("Escape");
@@ -458,6 +469,38 @@ const group = (page: Page, name: string) =>
   await settle(page);
   const sb = (await sec.boundingBox())!;
   await shot(page, "settings-autolist.png", { x: 0, y: sb.y - 12, width: 1280, height: sb.height + 24 });
+  await page.context().close();
+}
+
+{
+  const page = await session();
+  await page.getByRole("button", { name: "Развернуть все" }).click();
+  await settle(page);
+  const g = group(page, "ChatGPT");
+  await g.getByRole("button", { name: "Настройки группы" }).click();
+  await settle(page);
+  const d = page.locator("[role=dialog]").last();
+  for (const u of ["https://lists.example.invalid/openai.srs", "https://lists.example.invalid/ai-services.txt"]) {
+    await d.locator("#gd-url").fill(u);
+    await d.getByRole("button", { name: "Добавить список" }).click();
+    await settle(page);
+  }
+  await d.getByRole("button", { name: "Сохранить" }).last().click();
+  await settle(page);
+  await page.getByRole("button", { name: /Сохранить изменения/ }).first().click();
+  await settle(page, 12000);
+  for (let i = 0; i < 6; i++) {
+    const retry = g.getByRole("button", { name: /Обновить список/ });
+    const n = await retry.count();
+    if ((await g.innerText()).includes("fetch failed") && n > 0) {
+      await retry.first().click();
+      await settle(page, 6000);
+    }
+  }
+  await page.mouse.move(0, 0);
+  await settle(page, 300);
+  const gb = (await g.boundingBox())!;
+  await shot(page, "list-group.png", { x: 0, y: gb.y - 12, width: 1280, height: 640 });
   await page.context().close();
 }
 
